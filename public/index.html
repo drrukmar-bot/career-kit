@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI-Assisted Career Kit</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1b2033;--mu:#626a80;--ac:#4f46e5;--ac2:#e0e7ff;--ok:#16a34a;--er:#dc2626;--bd:#dfe3ee;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141f;--card:#1b1f31;--tx:#eceefa;--mu:#9aa2bd;--ac:#8b86ff;--ac2:#2a2e52;--ok:#4ade80;--er:#f87171;--bd:#2c3150}}
+:root[data-theme="dark"]{--bg:#12141f;--card:#1b1f31;--tx:#eceefa;--mu:#9aa2bd;--ac:#8b86ff;--ac2:#2a2e52;--ok:#4ade80;--er:#f87171;--bd:#2c3150}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:14px 14px 40px}
+h1{font-size:20px;margin:2px 0 8px}h2{font-size:18px;margin:0 0 4px}h3{font-size:15px;margin:14px 0 6px}
+.sub,.tip{color:var(--mu);margin:0 0 10px}.tip{font-size:13px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin:10px 0}
+.hero{text-align:center;padding:26px 16px}.hero .acts{justify-content:center}
+.nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.pill{flex:0 0 auto;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:99px;padding:6px 13px;font:inherit;font-size:13px;cursor:pointer}
+.pill.on{background:var(--ac);border-color:var(--ac);color:#fff}
+label{display:block;font-weight:600;font-size:13px;margin:10px 0 4px}
+input[type=text],textarea,select{width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+textarea{min-height:80px;resize:vertical}
+button.b{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}
+button.b:disabled{opacity:.6;cursor:wait}
+button.g,.chip{background:transparent;color:var(--ac);border:1px solid var(--ac);border-radius:10px;padding:6px 12px;font:inherit;cursor:pointer}
+.chip{border-radius:99px;font-size:13px;color:var(--tx);border-color:var(--bd);background:var(--card)}.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.out{margin-top:10px}.out h3{margin:12px 0 4px}.out p{margin:6px 0}.out ul{margin:6px 0;padding-left:20px}
+.err{color:var(--er)}.ok{color:var(--ok)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.grid button{padding:12px 8px;text-align:center}
+.top{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.top>div:last-child{flex:1;min-width:180px}
+.br{margin:7px 0;font-size:13px}.br span{display:flex;justify-content:space-between}
+.bar{height:8px;background:var(--ac2);border-radius:99px;overflow:hidden;margin-top:3px}.bar i{display:block;height:100%;background:var(--ac)}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:6px 4px;border-bottom:1px solid var(--bd)}
+.bub{padding:9px 12px;border-radius:12px;margin:8px 0;max-width:92%}.bub.user{background:var(--ac2);margin-left:auto}.bub.assistant{background:var(--bg);border:1px solid var(--bd)}
+.bub p{margin:4px 0}.row{display:flex;gap:8px}.row input{flex:1}
+.qbox{font-size:18px;font-weight:600;text-align:center;padding:16px 8px}
+.foot{color:var(--mu);font-size:12px;text-align:center;margin-top:20px}
+details{border-top:1px solid var(--bd);padding:2px 0}summary{cursor:pointer;font-weight:600;padding:8px 0}
+.chk{display:flex;gap:10px;align-items:center;margin:6px 0;font-weight:400;font-size:15px}.chk input{width:18px;height:18px;accent-color:var(--ac)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🎯 AI-Assisted Career Kit</h1>
+<div class="nav" id="nav"></div>
+<div id="view"></div>
+<p class="foot">Your details stay in this browser. When you ask for AI help, that text is sent to Google's Gemini service to write your answer, so do not enter phone, ID or bank numbers. AI can make mistakes: review everything before you use it. <span id="ai"></span></p>
+</div>
+<script>
+const $=s=>document.querySelector(s),esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DEG=['MBA','BBA','B.Com','Engineering','Arts & Science','Other'],YR=['1st','2nd','3rd','4th','Final'],INT=['Marketing','Finance','HR','Operations','Business Analytics','IT','Consulting','Entrepreneurship','Other'];
+const SK=['Excel','Power BI','SQL','Python','Communication','Presentation','Data Visualization','Research','Leadership','Digital Marketing','Financial Analysis','Negotiation'];
+const IND=['Marketing','Finance','HR','Business Analytics','Operations','IT','Consulting','Banking','FMCG'],ITY=['HR','Marketing','Finance','Business Analytics','Operations','General Management','Case Interview'];
+const SG=['Improve my resume','Practice interview questions','Explain my skill gaps','Prepare me for HR questions','Improve my answer','Create a 7-day preparation plan','Help me prepare for this company'];
+const CHK=['Resume customized','Company researched','20 HR questions practiced','10 technical questions practiced','Mock interview completed'];
+const NAV=[['dash','Dashboard'],['plan','Plan'],['build','Build'],['practice','Practice'],['coach','Improve'],['prepare','Prepare'],['ready','Readiness']];
+const DIM=['Communication','Relevance','Structure','Confidence','Content','Professionalism'];
+let S={};try{S=JSON.parse(localStorage.getItem('ack3')||'{}')}catch(e){}
+S.p=S.p||{};S.sk=S.sk||{};S.sec=S.sec||{};S.ivs=S.ivs||[];S.chk=S.chk||{};S.chat=S.chat||[];S.t=S.t||{};S.set=S.set||{};
+const P=S.p;let view=P.name?'dash':'home',SM=null,DL=null,tInt=null;
+const save=()=>{try{localStorage.setItem('ack3',JSON.stringify(S))}catch(e){}};
+const f=s=>s.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>'),av=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):0,n100=x=>Math.max(0,Math.min(100,Math.round(+x||0)));
+function md(t){let h='',u=false;for(const r of esc(t).split('\n')){const l=r.trim(),m=l.match(/^(?:[-*•]|\d+[.)])\s+(.*)/);if(m&&!u){h+='<ul>';u=true}if(!m&&u){h+='</ul>';u=false}
+if(m)h+='<li>'+f(m[1])+'</li>';else if(/^#{1,4}\s/.test(l))h+='<h3>'+f(l.replace(/^#+\s*/,''))+'</h3>';else if(l&&!/^[-=|]{3,}$/.test(l))h+='<p>'+f(l)+'</p>'}return h+(u?'</ul>':'')}
+const bar=(l,v)=>`<div class="br"><span>${l}<b>${v}%</b></span><div class="bar"><i style="width:${v}%"></i></div></div>`;
+const ring=v=>`<svg viewBox="0 0 120 120" width="124"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--ac2)" stroke-width="12"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--ac)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${v*3.267} 327" transform="rotate(-90 60 60)"/><text x="60" y="67" text-anchor="middle" font-size="26" font-weight="700" fill="currentColor">${v}%</text></svg>`;
+const inp=(k,l,ph='')=>`<label>${l}</label><input type="text" data-p="${k}" placeholder="${ph}" value="${esc(P[k])}">`;
+const sel=(k,l,o)=>`<label>${l}</label><select data-p="${k}"><option value="">Select</option>${o.map(x=>`<option ${P[k]==x?'selected':''}>${x}</option>`).join('')}</select>`;
+const ta=(k,l,ph='')=>`<label>${l}</label><textarea data-p="${k}" placeholder="${ph}">${esc(P[k])}</textarea>`;
+function R(){const cl=Math.min(100,[P.role,P.co,P.industry,P.bg].filter(x=>(x||'').trim()).length*15+(S.plan?20:0)+(S.gap?20:0)),rs=S.rs?S.rs.total:0,iv=S.ivs.length?S.ivs.at(-1).total:0,
+sk=S.gap&&S.gap.length?av(S.gap.map(g=>Math.min(100,g.cur/g.req*100))):0,ind=Math.min(100,CHK.filter((_,i)=>S.chk[i]).length*14+(S.prep?30:0));
+const o=[['Career Clarity',cl],['Resume',rs],['Interview',iv],['Skills',sk],['Industry Preparation',ind]];return{o,all:av(o.map(x=>x[1])),cl,rs,iv,sk,ind}}
+const TAB={'Career Clarity':'plan',Resume:'build',Interview:'practice',Skills:'plan','Industry Preparation':'prepare'};
+const ACT={'Career Clarity':'Finish your skill gap and 30-day plan.',Resume:'Score your resume and fix the red recommendations.',Interview:'Complete 2 more mock interviews this week.',Skills:'Spend this week closing your biggest skill gap.','Industry Preparation':'Create your industry brief and finish the checklist.'};
+function next(){if(!P.role)return['Complete your career profile','profile'];if(!S.gap)return['Analyse your skill gap','plan'];if(!S.t.plan)return['Create your 30-day plan','plan'];if(!S.rs)return['Get your resume scored','build'];
+if(!S.ivs.length)return['Complete your first mock interview','practice'];if(!S.prep)return['Create your industry brief','prepare'];const l=R().o.slice().sort((a,b)=>a[1]-b[1])[0];return['Improve '+l[0]+' ('+l[1]+'%)',TAB[l[0]]]}
+function ctx(full){const r=R(),iv=S.ivs.at(-1);return `STUDENT PROFILE
+Name: ${P.name||'-'} | Education: ${[P.degree,P.year&&P.year+' year',P.spec,P.college].filter(Boolean).join(', ')||'-'} | Graduation: ${P.grad||'-'}
+Career interests: ${(P.int||[]).join(', ')||'-'}
+Target role: ${P.role||'-'} | Target companies: ${P.co||'-'} | Preferred industry: ${P.industry||'-'}
+Background: ${P.bg||'-'}
+Skills (self-rated 1-5): ${Object.entries(S.sk).map(([k,v])=>k+' '+v).join(', ')||'-'}
+Skill gaps (current/required): ${(S.gap||[]).map(g=>`${g.skill} ${g.cur}/${g.req}`).join(', ')||'not analysed'}
+Scores: resume ${S.rs?S.rs.total+'/100':'n/a'}; latest mock interview ${iv?iv.total+'/100 '+JSON.stringify(iv.dims):'n/a'}; readiness ${r.all}%${full?`\n\nRESUME:\n${P.resume||'(none)'}\n\nJOB DESCRIPTION:\n${P.jd||'(none)'}`:''}`}
+const SYS='You are a friendly, practical placement coach for Indian MBA and undergraduate students. Be specific and concise. Use markdown headings and bullet lists only, no tables. Never invent facts, employers, numbers or achievements about the student: where details are missing, use a [bracketed placeholder].\n\n';
+function err(e){const c=e&&e.code;return c=='not_granted'?'Permission was declined. Reload the page and allow Claude to answer.':c=='rate_limited'?'Too many requests. Wait a minute and try again.':'Something went wrong: '+esc((e&&e.message)||e)}
+function needAI(el){if(!SM){el.innerHTML='<p class="err">The AI service is not available right now. Please try again.</p>';return true}
+if(!(P.role||'').trim()){el.innerHTML='<p class="err">Please add your target job role in your profile first.</p>';return true}return false}
+async function ai(el,prompt,json){if(needAI(el))return null;el.innerHTML='<p class="tip">Working on it…</p>';
+try{if(json)return await SM.json(SYS+prompt+'\nReturn ONLY valid JSON.',{cache:false});return(await SM(SYS+prompt,{cache:false,onText:u=>{el.innerHTML=md(u.text)}})).text}
+catch(e){el.innerHTML=(e&&e.text?md(e.text):'')+'<p class="err">'+err(e)+'</p>';return null}}
+const acts=(k,x='')=>`<button class="g" data-act="copy" data-k="${k}">Copy</button>${DL?`<button class="g" data-act="dl" data-k="${k}">Download</button>`:''}${x}`;
+const block=(k,x='')=>`<div class="out" id="o-${k}">${S.t[k]?md(S.t[k]):''}</div><div class="acts" id="a-${k}">${S.t[k]?acts(k,x):''}</div>`;
+async function stream(k,prompt,x){const o=$('#o-'+k),r=await ai(o,prompt);if(r){S.t[k]=r;save();o.innerHTML=md(r);$('#a-'+k).innerHTML=acts(k,x);render()}}
+const gapL=g=>{const d=g.req-g.cur;return d>=2?'High':d==1?'Medium':'Low'};
+const rsHTML=r=>`<h3>Resume Score: ${r.total}/100</h3>${[['Format','format'],['Grammar','grammar'],['Keywords','keywords'],['Achievements','achievements'],['Job relevance','relevance']].map(([l,k])=>bar(l,r[k])).join('')}<h3>AI Recommendations</h3>${r.recs.map(x=>`<p>${{improve:'🔴',consider:'🟡',good:'🟢'}[x.lvl]||'•'} ${esc(x.t)}</p>`).join('')}`;
+const jmHTML=j=>`<h3>Job Match Score: ${j.score}%</h3><p><b>Missing keywords:</b> ${j.missing.map(esc).join(', ')||'none'}</p><h3>Recommended improvements</h3><ul>${j.improve.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
+const VW={
+home:()=>`<div class="card hero"><h2>AI-ASSISTED CAREER KIT</h2><p class="sub">Prepare Smart. Perform Confidently.</p><p>Your structured journey from career planning to placement readiness.</p>
+<div class="acts"><button class="b" data-go="${P.name?'dash':'profile'}">🚀 ${P.name?'Continue My Career Journey':'Start My Career Journey'}</button><button class="g" data-act="how">ℹ️ How It Works</button></div>
+<div id="how" hidden class="out"><p>1. Create your profile. 2. Plan your goal and skills. 3. Build your resume. 4. Practice mock interviews. 5. Improve with your AI coach. 6. Prepare for your industry. Your Career Readiness score tracks it all.</p></div>
+<p style="margin-top:18px"><b>01 PLAN → 02 BUILD → 03 PRACTICE → 04 IMPROVE → 05 PREPARE</b></p><p class="tip">Your career preparation. One structured journey.</p></div>`,
+profile:()=>`<div class="card"><h2>Create Your Career Profile</h2>${inp('name','Name *')}${inp('email','Email (optional)')}${inp('college','College')}${sel('degree','Degree',DEG)}${sel('year','Year',YR)}${inp('spec','Specialization')}${inp('grad','Expected graduation year','2027')}
+<label>Career interest</label><div class="chips">${INT.map(i=>`<button class="chip ${(P.int||[]).includes(i)?'on':''}" data-act="int" data-k="${i}">${i}</button>`).join('')}</div>
+<h3>Your goal</h3>${inp('role','Target job role *','e.g. Business Analyst')}${inp('co','Target companies','e.g. Deloitte, Accenture, TCS')}${inp('industry','Preferred industry','e.g. Consulting / IT Services')}${ta('bg','Skills, projects, internships, achievements','Rough notes are fine')}
+<div class="acts"><button class="b" data-act="saveprof">Create My Career Profile →</button></div><p class="err" id="pe"></p></div>`,
+dash:()=>{const r=R(),nx=next(),st=[['🎯 Plan',r.cl],['📄 Build',r.rs],['🎤 Practice',r.iv],['🤖 Improve',Math.min(100,S.chat.filter(m=>m.r=='user').length*20+(S.jm?40:0))],['🏢 Prepare',r.ind]];
+return `<div class="card"><h2>${['Good morning','Good afternoon','Good evening'][new Date().getHours()<12?0:new Date().getHours()<17?1:2]}, ${esc((P.name||'').split(' ')[0])} 👋</h2>
+<div class="top"><div>${ring(r.all)}</div><div><b>Your Career Readiness</b>${st.map(s=>bar(s[0],s[1])).join('')}</div></div></div>
+<div class="card"><b>Recommended next step</b><p>${esc(nx[0])}</p><button class="b" data-go="${nx[1]}">Start →</button></div>
+<div class="card"><b>Quick actions</b><div class="grid" style="margin-top:8px">${[['plan','🎯 Career Planner'],['build','📄 Resume'],['practice','🎤 Mock Interview'],['coach','🤖 AI Career Coach'],['prepare','🏢 Industry Prep'],['profile','✏️ Edit Profile']].map(([k,t])=>`<button class="g" data-go="${k}">${t}</button>`).join('')}</div></div>`},
+plan:()=>`<div class="card"><h2>🎯 PLAN: Career Planner</h2><p class="sub">Goal: <b>${esc(P.role||'not set')}</b>${P.co?' at '+esc(P.co):''}${P.industry?' · '+esc(P.industry):''} <a href="#" data-go="profile">edit</a></p>
+<h3>Current skills</h3><p class="tip">Tap the skills you have, then rate each from 1 to 5.</p><div class="chips">${SK.map(k=>`<button class="chip ${S.sk[k]?'on':''}" data-act="sk" data-k="${k}">${k}</button>`).join('')}</div>
+${Object.keys(S.sk).map(k=>`<div class="row" style="align-items:center;margin:4px 0"><span style="flex:1">${k}</span><select style="width:90px" data-sk="${k}">${[1,2,3,4,5].map(n=>`<option ${S.sk[k]==n?'selected':''}>${n}</option>`).join('')}</select></div>`).join('')}
+<div class="acts"><button class="b" data-act="gap">Analyse my skill gap</button></div><div id="gm"></div>
+${S.gap?`<h3>Your skill gap</h3><table><tr><th>Skill</th><th>Current</th><th>Required</th><th>Gap</th></tr>${S.gap.map(g=>`<tr><td>${esc(g.skill)}</td><td>${g.cur}/5</td><td>${g.req}/5</td><td class="${gapL(g)=='High'?'err':''}">${gapL(g)}</td></tr>`).join('')}</table>`:''}</div>
+<div class="card"><h2>Your 30-day plan</h2><div class="acts"><button class="b" data-act="plan">${S.t.plan?'Recreate':'Create'} my plan</button></div>${block('plan')}</div>`,
+build:()=>`<div class="card"><h2>📄 BUILD: Resume</h2><p class="sub">Resume Score: <b>${S.rs?S.rs.total+'/100':'not scored yet'}</b></p>
+${ta('resume','Paste your resume','Paste the text of your current resume')}<div class="acts"><button class="b" data-act="rs">Score my resume</button></div><div class="out" id="o-rs">${S.rs?rsHTML(S.rs):''}</div></div>
+<div class="card"><h2>Check against a job</h2>${ta('jd','Paste the job description')}<div class="acts"><button class="b" data-act="jm">Check job match</button></div><div class="out" id="o-jm">${S.jm?jmHTML(S.jm):''}</div></div>
+<div class="card"><h2>Resume builder</h2><p class="sub">Fill what you can. Rough notes are fine, the AI writes the resume.</p>
+${['Career objective','Education','Internship','Projects','Certifications','Achievements','Extracurricular activities'].map(s=>`<details><summary>${s}</summary><textarea data-sec="${s}">${esc(S.sec[s])}</textarea></details>`).join('')}
+<div class="acts"><button class="b" data-act="cr">Create my resume</button></div>${block('cr','<button class="g" data-act="use">Use as my resume</button>')}</div>`,
+practice:()=>{const v=S.iv;if(v&&!v.res){const k=v.qs.length-1;return `<div class="card"><p class="tip">AI INTERVIEWER · ${esc(v.type)} · ${esc(v.diff)}</p><p class="tip">Question ${k+1} of 10 <span id="tm" style="float:right"></span></p><div class="qbox">${esc(v.qs[k].q)}</div>
+<textarea data-ia style="min-height:130px" placeholder="Type your answer here...">${esc(v.qs[k].a)}</textarea><div class="acts"><button class="b" data-act="ivs">Submit →</button>${k>=2?'<button class="g" data-act="ivf">Finish &amp; see results</button>':''}</div><div id="im"></div></div>`}
+const r=v&&v.res;return `<div class="card"><h2>🎤 PRACTICE: Mock Interview</h2><label>Interview type</label><select data-ivt>${ITY.map(t=>`<option ${S.set.t==t?'selected':''}>${t}</option>`).join('')}</select>
+<label>Difficulty</label><select data-ivd>${['Beginner','Intermediate','Advanced'].map(t=>`<option ${S.set.d==t?'selected':''}>${t}</option>`).join('')}</select>
+<p class="tip">Text mode. Voice interviews are planned for Phase 2.</p><div class="acts"><button class="b" data-act="ivstart">Start Interview</button></div><div id="im"></div></div>
+${r?`<div class="card"><h2>${r.total}/100</h2>${DIM.map(d=>bar(d,r.dims[d])).join('')}<h3>What you did well</h3><p>${esc(r.well)}</p><h3>What to improve</h3><p>${esc(r.improve)}</p><h3>Recommended technique</h3><p>${esc(r.technique)}</p></div>`:''}
+${S.ivs.length?`<p class="tip">Past interview scores: ${S.ivs.map(x=>x.total).join(', ')}</p>`:''}`},
+coach:()=>`<div class="card"><h2>🤖 IMPROVE: Your AI Career Coach</h2><p class="sub">Hi${P.name?' '+esc(P.name.split(' ')[0]):''}! I know your profile, skill gaps and scores, so my advice is specific to you.</p>
+<div class="chips">${SG.map(s=>`<button class="chip" data-act="sg" data-t="${esc(s)}">${s}</button>`).join('')}</div>
+<div id="chat">${S.chat.map((m,i)=>`<div class="bub ${m.r}" id="b${i}">${m.r=='user'?esc(m.c):md(m.c)}</div>`).join('')}</div>
+<div class="row"><input type="text" id="ci" placeholder="Ask your coach..."><button class="b" data-act="send">Send</button></div><div id="ce"></div></div>`,
+prepare:()=>{const d=S.prep;return `<div class="card"><h2>🏢 PREPARE: Industry Preparation</h2><label>Choose your industry</label><select data-ind>${IND.map(t=>`<option ${(S.ind||P.industry)==t?'selected':''}>${t}</option>`).join('')}</select>
+<div class="acts"><button class="b" data-act="prep">${d?'Recreate':'Create'} my brief</button></div><div id="pm"></div>
+${d?`<h3>Important skills</h3><p>${d.skills.map(esc).join(' · ')}</p><h3>Common interview topics</h3><p>${d.topics.map(esc).join(' · ')}</p><h3>Likely questions</h3><ul>${d.questions.map(q=>`<li><b>${esc(q.q)}</b><br><span class="tip">${esc(q.hint)}</span></li>`).join('')}</ul><p class="tip">General knowledge, not live news. Check recent company news before interviews.</p>`:''}</div>
+<div class="card"><h2>Preparation checklist</h2>${CHK.map((c,i)=>`<label class="chk"><input type="checkbox" data-chk="${i}" ${S.chk[i]?'checked':''}>${c}</label>`).join('')}</div>`},
+ready:()=>{const r=R(),l=r.o.slice().sort((a,b)=>a[1]-b[1])[0];return `<div class="card"><h2>🎯 Career Readiness</h2><div class="top"><div>${ring(r.all)}</div><div>${r.o.map(o=>bar(o[0],o[1])).join('')}</div></div></div>
+<div class="card"><b>Your biggest improvement opportunity</b><p>${l[0]} (${l[1]}%)</p><b>Recommended action</b><p>${ACT[l[0]]}</p><div class="acts"><button class="b" data-go="${TAB[l[0]]}">Go there →</button><button class="g" data-go="coach">Ask my AI coach</button></div></div>`}};
+function render(top){clearInterval(tInt);const a=P.name&&view!='home'&&view!='profile';$('#nav').innerHTML=a?NAV.map(([k,t])=>`<button class="pill ${k==view?'on':''}" data-go="${k}">${t}</button>`).join(''):'';
+$('#view').innerHTML=VW[view]();if(view=='practice'&&S.iv&&!S.iv.res){const t0=Date.now();tInt=setInterval(()=>{const e=$('#tm');if(e){const s=Math.floor((Date.now()-t0)/1000);e.textContent='⏱ '+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}},1000)}if(top)scrollTo(0,0)}
+async function nextQ(el){const v=S.iv,h=v.qs.map((x,i)=>`Q${i+1}: ${x.q}\nA${i+1}: ${x.a||'(no answer)'}`).join('\n');
+const r=await ai(el,`You are a ${v.diff} level ${v.type} interviewer. ${ctx()}\n\nTranscript so far:\n${h||'(none)'}\n\nAsk question ${v.qs.length+1} of 10${v.qs.length?', following up naturally on the previous answer where useful':', a typical opening question'}. Format: {"q":"the question"}`,true);return r&&r.q?String(r.q):null}
+async function finish(el){const v=S.iv,h=v.qs.filter(x=>(x.a||'').trim()).map((x,i)=>`Q${i+1}: ${x.q}\nA${i+1}: ${x.a}`).join('\n');
+if(!h){el.innerHTML='<p class="err">Answer at least one question first.</p>';return}
+const r=await ai(el,`Score this ${v.diff} ${v.type} mock interview honestly (no inflation). ${ctx()}\n\n${h}\n\nFormat: {"total":0-100,"dims":{${DIM.map(d=>`"${d}":0-100`).join(',')}},"well":"2 sentences","improve":"2 sentences","technique":"one concrete technique with a short example"}`,true);
+if(!r)return;const dims={};DIM.forEach(d=>dims[d]=n100(r.dims&&r.dims[d]));v.res={total:n100(r.total),dims,well:String(r.well||''),improve:String(r.improve||''),technique:String(r.technique||'')};S.ivs.push({total:v.res.total,dims});save();render(true)}
+async function send(t){t=(t||'').trim();const e=$('#ce');if(!t||needAI(e))return;e.innerHTML='';S.chat.push({r:'user',c:t},{r:'assistant',c:''});render();const i=S.chat.length-1,b=$('#b'+i);b.innerHTML='<span class="tip">Thinking…</span>';
+const turns=S.chat.slice(0,-1).slice(-9).filter(m=>m.c).map(m=>({role:m.r,content:m.c}));while(turns.length&&turns[0].role!='user')turns.shift();
+turns[turns.length-1].content=SYS+'COACH MODE: use the student context to give specific, actionable advice.\n\n'+ctx(true)+'\n\nSTUDENT MESSAGE: '+t;
+try{const r=await SM(turns,{cache:false,onText:u=>{b.innerHTML=md(u.text)}});S.chat[i].c=r.text;save();render()}catch(x){S.chat.splice(-2);render();$('#ce').innerHTML='<p class="err">'+err(x)+'</p>'}}
+document.addEventListener('click',async e=>{const t=e.target.closest('[data-go],[data-act]');if(!t)return;if(t.tagName=='A')e.preventDefault();
+if(t.dataset.go){view=t.dataset.go;render(true);return}const a=t.dataset.act,k=t.dataset.k;
+if(a=='how'){$('#how').hidden=!$('#how').hidden}
+else if(a=='int'){P.int=P.int||[];const i=P.int.indexOf(k);i<0?P.int.push(k):P.int.splice(i,1);t.classList.toggle('on');save()}
+else if(a=='saveprof'){if(!(P.name||'').trim()||!(P.role||'').trim()){$('#pe').textContent='Please enter your name and target job role.';return}save();view='dash';render(true)}
+else if(a=='sk'){S.sk[k]?delete S.sk[k]:S.sk[k]=3;save();render()}
+else if(a=='gap'){t.disabled=true;const m=$('#gm'),r=await ai(m,`Compare the student's skills with what the target role requires.\n\n${ctx()}\n\nList the 6-8 most important skills for the target role (include the student's rated skills where relevant). cur = the student's self-rating 1-5 (0 if not rated), req = level required for the role, 1-5. Format: [{"skill":"","cur":0,"req":4}]`,true);
+const g=(Array.isArray(r)?r:r&&r.skills||[]).slice(0,10).map(x=>({skill:String(x.skill||''),cur:Math.max(0,Math.min(5,+x.cur||0)),req:Math.max(1,Math.min(5,+x.req||4))})).filter(x=>x.skill);
+if(g.length){S.gap=g;save();render()}else if(r)m.innerHTML='<p class="err">Could not read the result. Please try again.</p>';t.disabled=false}
+else if(a=='plan'){t.disabled=true;await stream('plan',`Create a personalised 30-day placement preparation plan.\n\n${ctx()}\n\nStructure: Goal summary (2 lines), then Week 1 to Week 4, each with focus areas and specific daily tasks with hours. Prioritise the biggest skill gaps. End with 3 common mistakes to avoid.`);t.disabled=false}
+else if(a=='rs'){t.disabled=true;const o=$('#o-rs');if(!(P.resume||'').trim())o.innerHTML='<p class="err">Paste your resume first.</p>';else{const r=await ai(o,`Evaluate this resume honestly for the target role.\n\n${ctx(true)}\n\nFormat: {"total":0-100,"format":0-100,"grammar":0-100,"keywords":0-100,"achievements":0-100,"relevance":0-100,"recs":[{"lvl":"improve|consider|good","t":"one specific recommendation"}]} with 5-7 recs.`,true);
+if(r){S.rs={total:n100(r.total),format:n100(r.format),grammar:n100(r.grammar),keywords:n100(r.keywords),achievements:n100(r.achievements),relevance:n100(r.relevance),recs:(r.recs||[]).slice(0,8).map(x=>({lvl:x.lvl,t:String(x.t||'')}))};save();o.innerHTML=rsHTML(S.rs);prog()}}t.disabled=false}
+else if(a=='jm'){t.disabled=true;const o=$('#o-jm');if(!(P.resume||'').trim()||!(P.jd||'').trim())o.innerHTML='<p class="err">Paste both your resume and the job description.</p>';else{const r=await ai(o,`Compare this resume with the job description.\n\n${ctx(true)}\n\nFormat: {"score":0-100,"missing":["missing keyword"],"improve":["specific improvement"]} with up to 8 missing keywords and 5 improvements.`,true);
+if(r){S.jm={score:n100(r.score),missing:(r.missing||[]).slice(0,10).map(String),improve:(r.improve||[]).slice(0,6).map(String)};save();o.innerHTML=jmHTML(S.jm)}}t.disabled=false}
+else if(a=='cr'){t.disabled=true;await stream('cr',`Write a one-page, ATS-friendly resume for the target role.\n\n${ctx(true)}\n\nStudent-provided sections:\n${Object.entries(S.sec).map(([k,v])=>k+': '+v).join('\n')||'(none)'}\n\nOutput plain text with: Header, Career Objective, Education, Internship, Projects, Skills, Certifications, Achievements, Extracurricular. Use strong action verbs. Add numbers ONLY if the student gave them, else write [add number]. Finish with a LinkedIn headline.`,'<button class="g" data-act="use">Use as my resume</button>');t.disabled=false}
+else if(a=='use'){P.resume=S.t.cr||'';save();t.textContent='Saved as your resume ✓'}
+else if(a=='copy'){const x=S.t[k]||'';try{await navigator.clipboard.writeText(x)}catch(_){const z=document.createElement('textarea');z.value=x;document.body.appendChild(z);z.select();try{document.execCommand('copy')}catch(_){}z.remove()}t.textContent='Copied ✓'}
+else if(a=='dl'){try{await DL.save({filename:k+'.txt',data:S.t[k]||''})}catch(_){}}
+else if(a=='ivstart'){t.disabled=true;S.set.t=S.set.t||ITY[0];S.set.d=S.set.d||'Beginner';S.iv={type:S.set.t,diff:S.set.d,qs:[]};const m=$('#im'),q=await nextQ(m);if(q){S.iv.qs.push({q,a:''});save();render(true)}else{S.iv=null;t.disabled=false}}
+else if(a=='ivs'){const v=S.iv,c=v.qs.at(-1),m=$('#im');if(!(c.a||'').trim()){m.innerHTML='<p class="err">Please write your answer first.</p>';return}t.disabled=true;
+if(v.qs.length>=10)await finish(m);else{const q=await nextQ(m);if(q){v.qs.push({q,a:''});save();render(true)}}t.disabled=false}
+else if(a=='ivf'){t.disabled=true;await finish($('#im'));t.disabled=false}
+else if(a=='prep'){t.disabled=true;const m=$('#pm'),r=await ai(m,`Create an interview preparation brief for the industry "${S.ind||P.industry||IND[0]}".\n\n${ctx()}\n\nFormat: {"skills":["5-6 important skills"],"topics":["6-8 common interview topics"],"questions":[{"q":"likely question","hint":"short answering hint"}]} with 8 questions.`,true);
+if(r&&r.questions){S.prep={skills:(r.skills||[]).map(String),topics:(r.topics||[]).map(String),questions:r.questions.slice(0,10).map(x=>({q:String(x.q||''),hint:String(x.hint||'')}))};save();render()}else if(r)m.innerHTML='<p class="err">Could not read the result. Please try again.</p>';t.disabled=false}
+else if(a=='sg'){send(t.dataset.t)}
+else if(a=='send'){const i=$('#ci');send(i.value)}});
+function prog(){}
+document.addEventListener('keydown',e=>{if(e.key=='Enter'&&e.target.id=='ci')send(e.target.value)});
+document.addEventListener('input',e=>{const d=e.target.dataset;if(d.p)P[d.p]=e.target.value;else if(d.sec)S.sec[d.sec]=e.target.value;else if(d.ia!=null)S.iv.qs.at(-1).a=e.target.value;else return;save()});
+document.addEventListener('change',e=>{const d=e.target.dataset,v=e.target.value;if(d.p)P[d.p]=v;else if(d.sk)S.sk[d.sk]=+v;else if(d.ivt!=null)S.set.t=v;else if(d.ivd!=null)S.set.d=v;else if(d.ind!=null)S.ind=v;else if(d.chk!=null)S.chk[d.chk]=e.target.checked;else return;save()});
+render();
+const call=async(input,json)=>{const m=typeof input=='string'?[{role:'user',content:input}]:input;let r,d={};
+try{r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:m,json:!!json})});d=await r.json()}catch(e){throw{code:'network',message:'Could not reach the server. Check your internet connection.'}}
+if(!r.ok)throw{code:r.status==429?'rate_limited':'error',message:d.error||'Server error'};return d.text};
+SM=async(i,o={})=>{const t=await call(i,false);if(o.onText)o.onText({text:t});return{text:t}};
+SM.json=async i=>{const t=(await call(i,true)).replace(/```json|```/g,'').trim(),x=t.search(/[\[{]/),y=Math.max(t.lastIndexOf(']'),t.lastIndexOf('}'));try{return JSON.parse(t.slice(x,y+1))}catch(e){throw{code:'parse',message:'The AI reply was not readable. Please try again.'}}};
+DL={save:async({filename,data})=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/plain'}));a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}};
+</script>
+</body>
+</html>
